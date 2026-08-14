@@ -1,0 +1,48 @@
+:root {
+  --header-height: 60px;
+  --footer-height: 50px;
+
+  --surface-page: #0d0d0d;
+  --surface-card: #1a1a19;
+  --surface-card-hover: #232322;
+  --ink-primary: #ffffff;
+  --ink-secondary: #c3c2b7;
+  --ink-muted: #898781;
+  --border-hairline: rgba(255, 255, 255, 0.10);
+  --accent: #3987e5;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-critical: #d03b3b;
+  --font-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background-color: var(--surface-page);
+  color: var(--ink-primary);
+  font-family: var(--font-sans);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex-grow: 1;
+  min-height: calc(100vh - var(--header-height) - var(--footer-height));
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-area {
+  flex: 1;
+}

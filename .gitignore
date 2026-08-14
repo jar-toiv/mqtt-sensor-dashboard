@@ -17,8 +17,12 @@ logs
 .DS_Store
 .fleet
 .idea
+CLAUDE.md
+instructions-manual.md
 
 # Local env files
 .env
 .env.*
 !.env.example
+!.env.production.example
+.vscode
