@@ -16,6 +16,7 @@ ENV HOST=0.0.0.0
 ENV PORT=3000
 ENV WS_PORT=3020
 COPY --from=build --chown=node:node /app/.output ./.output
+RUN mkdir -p logs && chown node:node logs
 USER node
 EXPOSE 3000 3020
 CMD ["node", ".output/server/index.mjs"]
