@@ -1,0 +1,36 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    expose:
+      - "3000"
+      - "3020"
+    environment:
+      NODE_ENV: production
+      NUXT_MONGODB_URI: ${MONGODB_URI}
+      NUXT_MONGOOSE_URI: ${MONGODB_URI}
+      NUXT_JWT_SECRET: ${JWT_SECRET}
+      NUXT_JWT_EXPIRES: ${JWT_EXPIRES}
+      NUXT_PUBLIC_WEBSOCKET_URI: https://${WS_DOMAIN}
+      CLIENT_ORIGIN: https://${DOMAIN}
+      WS_PORT: "3020"
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+      WS_DOMAIN: ${WS_DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
