@@ -48,7 +48,7 @@
   import { useAuthStore } from '../../store/auth'
   import { ref, computed } from 'vue'
   import { useRouter } from '#imports'
-  import UserSettings from '../user/userSettings.vue'
+  import UserSettings from '../user/UserSettings.vue'
   import AdminSettings from '../admin/AdminSettings.vue'
   import LoginForm from './LoginForm.vue'
 

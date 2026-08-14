@@ -19,6 +19,8 @@ logs
 .idea
 CLAUDE.md
 instructions-manual.md
+server-setup.sh
+server-setup-log.md
 
 # Local env files
 .env
