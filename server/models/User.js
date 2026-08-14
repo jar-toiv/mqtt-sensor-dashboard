@@ -43,19 +43,13 @@ userSchema.virtual('id').get(function () {
   return this._id.toHexString()
 })
 
-userSchema.pre('save', async function (next) {
-  try {
-    if (!this.isModified('password') || !this.password) return next()
+userSchema.pre('save', async function () {
+  if (!this.isModified('password') || !this.password) return
 
-    const salt = crypto.randomBytes(16).toString('hex')
-    this.salt = salt
-    this.password = crypto.pbkdf2Sync(this.password, salt, 1000, 64, 'sha512').toString('hex')
-    this.passwordChangedAt = Date.now() - 1000
-
-    next()
-  } catch (error) {
-    next(error)
-  }
+  const salt = crypto.randomBytes(16).toString('hex')
+  this.salt = salt
+  this.password = crypto.pbkdf2Sync(this.password, salt, 1000, 64, 'sha512').toString('hex')
+  this.passwordChangedAt = Date.now() - 1000
 })
 
 userSchema.methods.verifyPassword = function (candidate) {
