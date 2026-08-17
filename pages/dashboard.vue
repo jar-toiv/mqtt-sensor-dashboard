@@ -70,7 +70,10 @@
           />
         </div>
 
-        <ActivityChatBox v-if="authStore.userRole === 'admin'" />
+        <ActivityChatBox
+          v-if="authStore.userRole === 'admin'"
+          :is-connected="!connectionError"
+        />
       </div>
     </main>
   </div>

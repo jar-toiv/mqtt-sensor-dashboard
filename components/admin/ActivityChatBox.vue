@@ -1,19 +1,33 @@
 <template>
   <div
     class="chat-box"
-    :class="{ 'is-flashing': isFlashing }"
-    :style="{ width: boxWidth + 'px', height: boxHeight + 'px' }"
+    :class="{ 'is-flashing': isFlashing, 'is-collapsed': isCollapsed }"
+    :style="isCollapsed ? {} : { width: boxWidth + 'px', height: boxHeight + 'px' }"
     @animationend="isFlashing = false"
   >
     <div
+      v-if="!isCollapsed"
       class="resize-handle"
       @mousedown="startResize"
     />
     <div class="chat-header">
       <span>Live Activity</span>
-      <span class="chat-count">{{ activityStore.entries.length }}</span>
+      <div class="chat-header-actions">
+        <span class="chat-count">{{ activityStore.entries.length }}</span>
+        <button
+          type="button"
+          class="chat-toggle-btn"
+          :aria-label="isCollapsed ? 'Open activity chat' : 'Close activity chat'"
+          @click="toggleCollapsed"
+        >
+          <FontAwesomeIcon :icon="isCollapsed ? faComments : faXmark" />
+        </button>
+      </div>
     </div>
-    <ul class="chat-list">
+    <ul
+      v-if="!isCollapsed"
+      class="chat-list"
+    >
       <li
         v-for="entry in activityStore.entries"
         :key="entry.id"
@@ -34,20 +48,58 @@
 
 <script setup>
 import { nextTick, ref, watch } from 'vue'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faComments, faXmark } from '@fortawesome/free-solid-svg-icons'
 import { useActivityStore } from '../../store/activity'
+
+const props = defineProps({
+  isConnected: {
+    type: Boolean,
+    default: true
+  }
+})
 
 const activityStore = useActivityStore()
 const isFlashing = ref(false)
 
-const boxWidth = ref(320)
-const boxHeight = ref(360)
+const COLLAPSE_KEY = 'activityChatBox.collapsed'
+const isCollapsed = ref(typeof localStorage !== 'undefined' && localStorage.getItem(COLLAPSE_KEY) === 'true')
+
+const toggleCollapsed = () => {
+  isCollapsed.value = !isCollapsed.value
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(COLLAPSE_KEY, String(isCollapsed.value))
+  }
+}
+
+const STORAGE_KEY = 'activityChatBox.size'
+const DEFAULT_WIDTH = 420
+const DEFAULT_HEIGHT = 480
 
 const MIN_WIDTH = 240
-const MAX_WIDTH = 640
+const MAX_WIDTH = 800
 const MIN_HEIGHT = 200
-const MAX_HEIGHT = 640
+const MAX_HEIGHT = 800
+
+const loadStoredSize = () => {
+  if (typeof localStorage === 'undefined') return null
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY))
+  } catch {
+    return null
+  }
+}
+
+const storedSize = loadStoredSize()
+const boxWidth = ref(storedSize?.width ?? DEFAULT_WIDTH)
+const boxHeight = ref(storedSize?.height ?? DEFAULT_HEIGHT)
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max)
+
+const saveSize = () => {
+  if (typeof localStorage === 'undefined') return
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ width: boxWidth.value, height: boxHeight.value }))
+}
 
 const startResize = event => {
   const startX = event.clientX
@@ -64,6 +116,7 @@ const onMouseMove = moveEvent => {
   const onMouseUp = () => {
     window.removeEventListener('mousemove', onMouseMove)
     window.removeEventListener('mouseup', onMouseUp)
+    saveSize()
   }
 
   window.addEventListener('mousemove', onMouseMove)
@@ -72,7 +125,7 @@ const onMouseMove = moveEvent => {
 watch(
   () => activityStore.entries[0]?.id,
   async newId => {
-    if (!newId) return
+    if (!newId || !props.isConnected) return
     isFlashing.value = false
     await nextTick()
     isFlashing.value = true
@@ -143,8 +196,13 @@ const describe = entry => {
   z-index: 2;
 }
 
+.chat-box.is-collapsed {
+  width: auto;
+  height: auto;
+}
+
 .chat-box.is-flashing {
-  animation: chat-blink 0.7s ease-in-out 2;
+  animation: chat-blink 0.6s ease-in-out 1;
 }
 
 @keyframes chat-blink {
@@ -154,8 +212,8 @@ const describe = entry => {
     border-color: var(--border-hairline);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(110, 224, 110, 0.55), 0 0 16px rgba(110, 224, 110, 0.45);
-    border-color: #6ee06e;
+    box-shadow: 0 0 0 2px rgba(110, 224, 110, 0.25), 0 0 8px rgba(110, 224, 110, 0.2);
+    border-color: #a3d9a3;
   }
 }
 
@@ -163,12 +221,24 @@ const describe = entry => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--border-hairline);
   font-size: 0.75em;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.chat-box.is-collapsed .chat-header {
+  border-bottom: none;
+}
+
+.chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .chat-count {
@@ -176,6 +246,27 @@ const describe = entry => {
   border-radius: 10px;
   padding: 1px 8px;
   color: var(--ink-secondary);
+}
+
+.chat-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--border-hairline);
+  border-radius: 50%;
+  background-color: var(--surface-card-hover);
+  color: var(--ink-secondary);
+  font-size: 0.85em;
+  cursor: pointer;
+  color:rgb(79, 80, 80)
+}
+
+.chat-toggle-btn:hover {
+  background-color: var(--surface-card);
+  color: var(--ink-primary);
 }
 
 .chat-list {
