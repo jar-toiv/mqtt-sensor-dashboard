@@ -1,3 +1,5 @@
+# Project has moved from LIVE to DEMO data
+
 # Sensor Dashboard
 
 A Nuxt 3 web application for viewing water meter readings collected from M-Bus sensors in the field. Users drill down through a **Site → Location → Instrument → Meter detail** hierarchy, and readings update live on screen as new measurements arrive in the database — no page refresh, no polling.
