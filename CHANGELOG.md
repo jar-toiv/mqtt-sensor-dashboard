@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-10-25
+
+### Node.js version requirement
+- Requires Node >= 24.22.1, which fixes four high-severity CVEs ([advisory](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)).
+- `.nvmrc` set to `24`, so nvm picks the newest 24.x.
+- CI: `docker build` in `.github/workflows/docker-build.yml` now runs with `--pull`, so every build starts from a freshly pulled `node:24-alpine`.
+
 ## 2026-08-12
 
 ### Access management (new feature)

@@ -12,4 +12,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Docker image
-        run: docker build -t sensor-dashboard:ci .
+        run: docker build --pull -t sensor-dashboard:ci .

@@ -79,7 +79,7 @@ There are also routes that return all locations, all gateways and all meters.
 
 ## Running locally
 
-You need a MongoDB replica set. The Docker image uses Node.js 24.
+You need a MongoDB replica set. Requires Node.js 24.22.1 or newer. The Docker image uses Node.js 24.
 
 ```bash
 # Install dependencies
