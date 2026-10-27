@@ -128,7 +128,7 @@ docker compose up -d --build
 
 ## Known rough edges
 
-- The websocket server does not check who connects. The client states its own role when it registers, so the admin room is not protected.
+- The websocket server does not check who connects. The client states its own user id and role when it registers, so anyone who can reach the websocket can join the admin room and receive the change events and the activity feed. These carry the demo meter data and the names of sites, locations, gateways and meters, but no user accounts or secrets. A fix would verify the `auth-token` cookie in the handshake. The cookie is host-only, so the websocket would first have to move from `WS_DOMAIN` to a path under `DOMAIN`.
 - An invited account has no password until the user sets one. Anyone who knows the invited email can claim the account first.
 - Only admins receive live updates. A `basic` user sees the data on load and nothing after that.
 - `server/plugins/websocket.js` registers its change handlers at start-up and again for each connection, so one change can be sent more than once.

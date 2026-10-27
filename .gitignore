@@ -28,3 +28,7 @@ server-setup-log.md
 !.env.example
 !.env.production.example
 .vscode
+
+# Local plans
+plans
+docs

@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-10-27
+
+### Websocket access (documented, not fixed)
+- The websocket server trusts the role the client sends, so the admin room and its change events are open to anyone who can reach the websocket. The events carry only demo meter data and entity names.
+- Left as is in this proof of concept. A fix needs cookie verification in the handshake and the websocket served under the main domain, because the `auth-token` cookie is host-only.
+- README "Known rough edges" updated.
+
+### Duplicate websocket handlers (documented, not fixed)
+- `server/plugins/websocket.js` registers the change handlers at start-up and again for each connection, so admins receive every change once per open socket plus one. 
+
 ## 2026-10-25
 
 ### Node.js version requirement
